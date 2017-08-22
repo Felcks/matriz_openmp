@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 #define ROW 1000
 
@@ -8,6 +9,9 @@ int main(void){
 
 	time_t start_time;
 	time_t end_time;
+
+	clock_t begin = clock();
+
 
 	int **matrizA, **matrizB, **matrizC;
 
@@ -34,10 +38,14 @@ int main(void){
 
 	start_time = time(NULL);
 
+	#pragma omp parallel for
 	for(i = 0; i < ROW; i++){
+		#pragma omp parallel for
 		for(j = 0; j < ROW; j++){
 
 			int sum = 0;
+
+			#pragma omp parallel for
 			for(k = 0; k < ROW; k++){
 				sum += matrizA[i][k] * matrizB[k][j];
 			}
@@ -47,7 +55,9 @@ int main(void){
 
 	end_time = time(NULL);
 
-	printf("time %ld\n", end_time - start_time);
+	clock_t end = clock();
+
+	printf("time %lf\n", ((double)(end - begin) / CLOCKS_PER_SEC) / 4);
 
 
 	/*for(i = 0; i < ROW; i++){
